@@ -195,22 +195,136 @@ export class LayerSensor extends LayerBiasa {
   }
 }
 
-/** Legenda kedalaman di pojok kiri bawah peta, warnanya diambil dari palet render. */
+/** Legenda lengkap di pojok kanan bawah peta (Corner Scale & Pop - Apple/Mapbox style). */
 export function buatLegenda(peta) {
-  const kontrol = L.control({ position: "bottomleft" });
+  const kontrol = L.control({ position: "bottomright" });
   kontrol.onAdd = () => {
     const maks = RENDER.KEDALAMAN_MAKS_M;
     const warna = RENDER.PALET.map((c) => `rgb(${c.join(",")})`).join(", ");
     const tanda = [0, 0.25, 0.5, 0.75, 1].map((f, i, a) => (i === a.length - 1 ? `≥ ${fmt(maks, 1)} m` : fmt(maks * f, 1)));
-    const div = L.DomUtil.create("div", "legenda");
-    div.setAttribute("role", "img");
-    div.setAttribute("aria-label", `Legenda kedalaman genangan, dari 0 sampai ${fmt(maks, 1)} meter atau lebih`);
-    div.innerHTML =
-      `<strong>Kedalaman genangan</strong>` +
-      `<div class="legenda-bar" style="background:linear-gradient(to right, ${warna})"></div>` +
-      `<div class="legenda-skala">${tanda.map((t) => `<span>${t}</span>`).join("")}</div>`;
-    L.DomEvent.disableClickPropagation(div);
-    return div;
+
+    const wadah = L.DomUtil.create("div", "map-legend-wrap");
+    L.DomEvent.disableClickPropagation(wadah);
+    L.DomEvent.disableScrollPropagation(wadah);
+
+    wadah.innerHTML = `
+      <div class="map-legend-card" role="region" aria-label="Legenda peta">
+        <div class="map-legend-header">
+          <div class="map-legend-title">
+            <svg class="map-legend-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            <span>Legenda Peta</span>
+          </div>
+          <button type="button" class="map-legend-btn" aria-label="Tutup legenda" title="Tutup legenda">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div class="map-legend-content">
+          <!-- Kedalaman Genangan -->
+          <div class="map-legend-sec">
+            <div class="map-legend-subtitle">Kedalaman genangan</div>
+            <div class="map-legend-bar" style="background:linear-gradient(to right, ${warna})"></div>
+            <div class="map-legend-scale">
+              ${tanda.map((t) => `<span>${t}</span>`).join("")}
+            </div>
+          </div>
+
+          <!-- Batas & Aliran Air -->
+          <div class="map-legend-sec">
+            <div class="map-legend-grid-2">
+              <div class="map-legend-item">
+                <span class="legend-swatch-line swatch-parit"></span>
+                <span>Sungai & parit</span>
+              </div>
+              <div class="map-legend-item">
+                <span class="legend-swatch-line swatch-kec"></span>
+                <span>Batas kecamatan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fasilitas Umum -->
+          <div class="map-legend-sec">
+            <div class="map-legend-subtitle">Fasilitas umum</div>
+            <div class="map-legend-chips">
+              <div class="map-legend-chip" title="${FASILITAS.rumah_sakit.label}">
+                <span class="legend-badge fas-rs">${FASILITAS.rumah_sakit.huruf}</span>
+                <span>${FASILITAS.rumah_sakit.label}</span>
+              </div>
+              <div class="map-legend-chip" title="${FASILITAS.puskesmas_klinik.label}">
+                <span class="legend-badge fas-klinik">${FASILITAS.puskesmas_klinik.huruf}</span>
+                <span>Puskesmas</span>
+              </div>
+              <div class="map-legend-chip" title="${FASILITAS.sekolah.label}">
+                <span class="legend-badge fas-sekolah"><span>${FASILITAS.sekolah.huruf}</span></span>
+                <span>${FASILITAS.sekolah.label}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Titik Sensor -->
+          <div class="map-legend-sec">
+            <div class="map-legend-subtitle">Titik sensor <small>(ilustratif)</small></div>
+            <div class="map-legend-chips">
+              <div class="map-legend-chip" title="${SENSOR.stasiun_hujan.label}">
+                <span class="legend-badge snr-r">${SENSOR.stasiun_hujan.huruf}</span>
+                <span>Hujan</span>
+              </div>
+              <div class="map-legend-chip" title="${SENSOR.stasiun_cuaca.label}">
+                <span class="legend-badge snr-c">${SENSOR.stasiun_cuaca.huruf}</span>
+                <span>Cuaca</span>
+              </div>
+              <div class="map-legend-chip" title="${SENSOR.sensor_debit.label}">
+                <span class="legend-badge snr-d">${SENSOR.sensor_debit.huruf}</span>
+                <span>Debit</span>
+              </div>
+              <div class="map-legend-chip" title="${SENSOR.stasiun_pasut.label}">
+                <span class="legend-badge snr-p">${SENSOR.stasiun_pasut.huruf}</span>
+                <span>Pasut</span>
+              </div>
+              <div class="map-legend-chip" title="${SENSOR.pusat_data.label}">
+                <span class="legend-badge snr-b">${SENSOR.pusat_data.huruf}</span>
+                <span>BPBD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="map-legend-pill" aria-label="Buka legenda peta" title="Buka legenda peta">
+        <svg class="map-legend-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+        <span class="map-legend-pill-text">Legenda</span>
+        <span class="map-legend-pill-swatch" aria-hidden="true" style="background:linear-gradient(to right, ${warna})"></span>
+        <svg class="map-legend-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+      </button>
+    `;
+
+    const btnClose = wadah.querySelector(".map-legend-btn");
+    const btnPill = wadah.querySelector(".map-legend-pill");
+
+    btnClose.addEventListener("click", () => {
+      wadah.classList.add("is-minimized");
+      btnPill.focus();
+    });
+
+    btnPill.addEventListener("click", () => {
+      wadah.classList.remove("is-minimized");
+      btnClose.focus();
+    });
+
+    return wadah;
   };
   return kontrol;
 }

@@ -16,7 +16,13 @@ import { fmt, esc } from "./util.js";
 import { inisiasiUI } from "./ui.js";
 
 const $ = (id) => document.getElementById(id);
-const IKON = { aman: "✔", waspada: "⚠", siaga: "⚠", banjir: "⛔" }; // status tidak hanya lewat warna
+// Ikon status peringatan: vektor SVG presisi, tanpa emoji
+const IKON_STATUS = {
+  aman: `<svg class="badge-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  waspada: `<svg class="badge-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
+  siaga: `<svg class="badge-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+  banjir: `<svg class="badge-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
+};
 
 // ---------- Peta ----------
 const peta = L.map("peta").setView([-0.03, 109.33], 12);
@@ -44,7 +50,13 @@ const awal = tersedia.find((b) => b.id === BASEMAP_DEFAULT) ?? tersedia[0];
 let basemapAktif = awal.id;
 pilihan[awal.id].addTo(peta);
 
-// Kontrol Basemap Kustom (Pill segmented switch yang profesional)
+// Ikon SVG untuk kontrol basemap (desain presisi, tanpa emoji)
+const IKON_BASEMAP = {
+  osm: `<svg class="basemap-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>`,
+  terang: `<svg class="basemap-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"></line></svg>`,
+};
+
+// Kontrol Basemap Kustom (Segmented Control / Frosted Glass)
 const KontrolBasemap = L.Control.extend({
   options: { position: "topright" },
   onAdd() {
@@ -55,15 +67,18 @@ const KontrolBasemap = L.Control.extend({
     wadah.innerHTML = `
       <div class="basemap-group" role="radiogroup" aria-label="Pilihan basemap">
         ${tersedia
-          .map(
-            (b) => `
-          <button type="button" class="basemap-btn ${b.id === basemapAktif ? "aktif" : ""}"
-            data-id="${b.id}" role="radio" aria-checked="${b.id === basemapAktif}">
-            <span class="basemap-icon">${b.id === "osm" ? "🗺️" : "⚪"}</span>
-            <span class="basemap-teks">${b.id === "osm" ? "Standar" : "Terang"}</span>
+          .map((b) => {
+            const label = b.id === "osm" ? "Standar" : b.id === "terang" ? "Terang" : b.nama;
+            const ikon = IKON_BASEMAP[b.id] ?? `<svg class="basemap-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>`;
+            const aktif = b.id === basemapAktif;
+            return `
+          <button type="button" class="basemap-btn ${aktif ? "aktif" : ""}"
+            data-id="${b.id}" role="radio" aria-checked="${aktif}" title="${b.nama}">
+            <span class="basemap-icon">${ikon}</span>
+            <span class="basemap-teks">${label}</span>
           </button>
-        `
-          )
+        `;
+          })
           .join("")}
       </div>
     `;
@@ -110,6 +125,7 @@ let layerSensor = null;
 const barisKec = new Map(); // id kecamatan -> elemen <tr>
 let urutanKec = "";
 let statusTerakhir = null;
+let statusBadgeTerakhir = null;
 let sigFas = null;
 let statusSr = null;
 
@@ -231,8 +247,15 @@ function hitung() {
     layer.perbarui(H);
     hTerakhir = H;
   }
-  $("badge").className = `badge ${r.status.id}`;
-  $("badge").textContent = `${IKON[r.status.id]} ${r.status.label}`;
+  if (r.status.id !== statusBadgeTerakhir) {
+    statusBadgeTerakhir = r.status.id;
+    $("badge").className = `badge ${r.status.id}`;
+    $("badge").innerHTML = `
+      <span class="badge-dot" aria-hidden="true"></span>
+      <span class="badge-icon" aria-hidden="true">${IKON_STATUS[r.status.id]}</span>
+      <span class="badge-label">${r.status.label}</span>
+    `;
+  }
   $("r-H").textContent = `${fmt(H, 2)} m`;
   $("r-luas").textContent = `${fmt(r.luasHa)} ha (${fmt(r.luasKm2, 1)} km²)`;
   $("r-persen").textContent = `${fmt(r.persenKota, 1)}%`;

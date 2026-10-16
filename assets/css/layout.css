@@ -25,16 +25,135 @@ h1, h2, p { margin: 0; }
 .panel-kepala { padding: 18px 20px 12px; }
 .panel-kepala h1 { font-size: var(--teks-judul); font-weight: 700; letter-spacing: -.01em; }
 .panel-kepala .ket { color: var(--teks-2); font-size: var(--teks-kecil); margin-top: 2px; }
-.status { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
-.status-ket { color: var(--teks-2); font-size: var(--teks-kecil); line-height: 1.35; font-variant-numeric: tabular-nums; }
+/* ---------- Badge Status Peringatan (Header Sidebar) ---------- */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+.status-ket {
+  color: var(--teks-2);
+  font-size: var(--teks-kecil);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
 .sheet-handle { display: none; }
 
-.badge { display: inline-flex; align-items: center; gap: .4em; flex: none; padding: 4px 12px; border-radius: var(--radius);
-  font-size: 1.0625rem; font-weight: 600; line-height: 1.3; }
-.badge.aman    { background: var(--aman-lembut);    color: var(--aman-teks);    border: 1px solid var(--aman); }
-.badge.waspada { background: var(--waspada-lembut); color: var(--waspada-teks); border: 1px solid var(--waspada); }
-.badge.siaga   { background: var(--siaga-lembut);   color: var(--siaga-teks);   border: 1px solid var(--siaga); }
-.badge.banjir  { background: var(--banjir-lembut);  color: var(--banjir-teks);  border: 1px solid var(--banjir); }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  height: 28px;
+  padding: 0 11px 0 9px;
+  border-radius: 9999px;
+  font-family: var(--font);
+  font-size: 0.78125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+  user-select: none;
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.badge-dot {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.badge-dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.badge-svg {
+  display: block;
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+}
+.badge-label {
+  display: inline-block;
+}
+
+/* Status: Aman */
+.badge.aman {
+  background: rgba(16, 185, 129, 0.1);
+  color: #065F46;
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.08);
+}
+.badge.aman .badge-dot {
+  background: #10B981;
+}
+
+/* Status: Waspada */
+.badge.waspada {
+  background: rgba(245, 158, 11, 0.12);
+  color: #92400E;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 1px 2px rgba(245, 158, 11, 0.1);
+}
+.badge.waspada .badge-dot {
+  background: #F59E0B;
+}
+
+/* Status: Siaga */
+.badge.siaga {
+  background: rgba(249, 115, 22, 0.12);
+  color: #9A3412;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  box-shadow: 0 1px 3px rgba(249, 115, 22, 0.15);
+}
+.badge.siaga .badge-dot {
+  background: #F9731B;
+}
+.badge.siaga .badge-dot::after {
+  background: #F9731B;
+  animation: badgeDotPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Status: Banjir */
+.badge.banjir {
+  background: rgba(239, 68, 68, 0.14);
+  color: #991B1B;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  box-shadow:
+    0 1px 3px rgba(239, 68, 68, 0.2),
+    0 0 12px rgba(239, 68, 68, 0.15);
+}
+.badge.banjir .badge-dot {
+  background: #EF4444;
+}
+.badge.banjir .badge-dot::after {
+  background: #EF4444;
+  animation: badgeDotPing 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes badgeDotPing {
+  0% { transform: scale(1); opacity: 0.75; }
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
 
 #muat, #galat { margin: 0 20px 10px; padding: 10px 12px; border-radius: var(--radius); font-size: var(--teks-kecil); }
 #muat { background: var(--aksen-lembut); color: var(--aksen-hover); border: 1px solid var(--aksen); }
@@ -249,62 +368,483 @@ tbody th { font-weight: 500; }
 .btn-panel { display: none; position: absolute; z-index: 3; top: 10px; left: 54px; height: 34px; padding: 0 12px; align-items: center; gap: 6px;
   border: 1px solid var(--garis-kuat); border-radius: var(--radius); background: #fff; font-weight: 600; font-size: var(--teks-kecil); cursor: pointer; box-shadow: var(--bayangan); }
 
-/* ---------- Kontrol Basemap Kustom (Pill Switch) ---------- */
+/* ---------- Kontrol Basemap Kustom (Segmented Control / Frosted Glass) ---------- */
 .basemap-switch {
   margin: 12px 12px 0 0;
 }
 .basemap-group {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
   padding: 3px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--garis);
-  border-radius: 99px;
-  box-shadow: var(--bayangan);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 9999px;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 14px -2px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   gap: 2px;
 }
 .basemap-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 5px 12px;
+  height: 28px;
   border: 0;
-  border-radius: 99px;
+  border-radius: 9999px;
   background: transparent;
   color: var(--teks-2);
-  font-size: var(--teks-kecil);
-  font-weight: 600;
+  font-family: var(--font);
+  font-size: 0.78125rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.1s ease;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.basemap-btn:hover {
+.basemap-btn:hover:not(.aktif) {
   color: var(--teks);
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(15, 23, 42, 0.04);
+}
+.basemap-btn:active {
+  transform: scale(0.96);
+}
+.basemap-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--aksen);
 }
 .basemap-btn.aktif {
   background: var(--aksen);
-  color: #fff;
-  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow:
+    0 1px 2px rgba(37, 99, 235, 0.25),
+    0 2px 6px rgba(59, 130, 246, 0.35);
+}
+.basemap-btn.aktif:focus-visible {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--aksen-hover), 0 2px 6px rgba(59, 130, 246, 0.35);
 }
 .basemap-icon {
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.16s ease;
+}
+.basemap-btn:hover:not(.aktif) .basemap-icon {
+  transform: translateY(-0.5px);
+}
+.basemap-svg {
+  display: block;
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  stroke-width: 2px;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .basemap-group {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: var(--garis);
+  }
+}
+
+/* ---------- Kontrol Legenda Peta (Bawah Kanan, Corner Scale & Pop) ---------- */
+.leaflet-bottom.leaflet-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.leaflet-bottom.leaflet-right .leaflet-control-attribution {
+  order: 2;
+  margin: 0;
+}
+
+/* Wadah Legenda: Relatif, bertindak sebagai jangkar sudut kanan-bawah */
+.map-legend-wrap {
+  position: relative;
+  order: 1;
+  margin: 0 10px 8px 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Card Legenda (Corner Scale & Pop) */
+.map-legend-card {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 252px;
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 11px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: var(--radius-besar, 12px);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px -4px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  pointer-events: auto;
+  transform-origin: bottom right;
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.28s cubic-bezier(0.16, 1.08, 0.38, 1),
+              opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.28s;
+  will-change: transform, opacity;
+}
+
+/* Card saat Minimized: menguncup ke pojok kanan bawah */
+.map-legend-wrap.is-minimized .map-legend-card {
+  transform: scale(0.84) translateY(6px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0.3, 1),
+              opacity 0.16s ease-out,
+              visibility 0.2s;
+}
+
+/* Header & Tombol Tutup */
+.map-legend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+.map-legend-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font);
+  font-size: 0.78125rem;
+  font-weight: 600;
+  color: var(--teks);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.map-legend-icon {
+  width: 13px;
+  height: 13px;
+  color: var(--aksen);
+  flex-shrink: 0;
+}
+.map-legend-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--teks-2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.map-legend-btn:hover {
+  color: var(--teks);
+  background: rgba(15, 23, 42, 0.06);
+}
+.map-legend-btn:active {
+  transform: scale(0.92);
+}
+.map-legend-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--aksen);
+}
+
+/* Floating Pill Button */
+.map-legend-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  height: 28px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 14px -2px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: var(--teks);
+  font-family: var(--font);
+  font-size: 0.78125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  transform-origin: bottom right;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform, opacity;
+
+  /* Keadaan saat Card sedang Terbuka: pill mengecil dan transparan */
+  transform: scale(0.88);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: transform 0.16s ease-in,
+              opacity 0.14s ease-in,
+              visibility 0.16s;
+}
+
+.map-legend-pill:hover {
+  background: #ffffff;
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.06),
+    0 6px 18px -2px rgba(15, 23, 42, 0.12);
+  transform: translateY(-0.5px);
+}
+.map-legend-pill:active {
+  transform: scale(0.96);
+}
+.map-legend-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--aksen);
+}
+.map-legend-pill-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 6px;
+  border-radius: 99px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.map-legend-chevron {
+  color: var(--teks-2);
+  transition: transform 0.15s ease;
+}
+.map-legend-pill:hover .map-legend-chevron {
+  color: var(--teks);
+  transform: translateY(-1px);
+}
+
+/* Pill saat Minimized: Pop-in dengan micro-bounce */
+.map-legend-wrap.is-minimized .map-legend-pill {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transition: transform 0.24s cubic-bezier(0.16, 1.15, 0.4, 1) 0.06s,
+              opacity 0.18s ease-out 0.06s,
+              visibility 0.24s 0.06s;
+}
+
+/* Konten Multi-seksi Legenda */
+.map-legend-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 2px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--garis-kuat) transparent;
+}
+.map-legend-content::-webkit-scrollbar {
+  width: 4px;
+}
+.map-legend-content::-webkit-scrollbar-thumb {
+  background: var(--garis-kuat);
+  border-radius: 99px;
+}
+
+/* Seksi Legenda */
+.map-legend-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.map-legend-sec + .map-legend-sec {
+  padding-top: 7px;
+  border-top: 1px solid rgba(226, 232, 240, 0.7);
+}
+.map-legend-subtitle {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--teks-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   line-height: 1;
 }
-.basemap-btn.aktif .basemap-icon {
-  filter: brightness(1.2);
+.map-legend-subtitle small {
+  text-transform: none;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+/* Skala Kedalaman */
+.map-legend-bar {
+  height: 8px;
+  border-radius: 99px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.map-legend-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--teks-2);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Grid 2 Kolom untuk Garis & Batas */
+.map-legend-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.71875rem;
+  color: var(--teks);
+  line-height: 1.2;
+}
+
+.legend-swatch-line {
+  flex-shrink: 0;
+  width: 16px;
+}
+.legend-swatch-line.swatch-parit {
+  height: 2.5px;
+  background: #0B6FA4;
+  border-radius: 2px;
+}
+.legend-swatch-line.swatch-kec {
+  height: 0;
+  border-top: 2px dashed #44546a;
+}
+
+/* Chips / Badges */
+.map-legend-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  align-items: center;
+}
+.map-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.71875rem;
+  color: var(--teks);
+  line-height: 1;
+}
+
+.legend-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  font-family: var(--font);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.legend-badge.fas-rs {
+  border: 1.5px solid #c62828;
+  color: #c62828;
+  background: #fff;
+  border-radius: 3px;
+  font-size: 9px;
+}
+.legend-badge.fas-klinik {
+  border: 1.5px solid #00796b;
+  color: #00796b;
+  background: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+}
+.legend-badge.fas-sekolah {
+  border: 1.5px solid #5e35b1;
+  color: #5e35b1;
+  background: #fff;
+  border-radius: 2px;
+  font-size: 8px;
+  width: 12px;
+  height: 12px;
+  transform: rotate(45deg);
+  margin: 1px 2px;
+}
+.legend-badge.fas-sekolah span {
+  display: block;
+  transform: rotate(-45deg);
+}
+
+.legend-badge.snr-r {
+  background: #0277BD;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 8.5px;
+}
+.legend-badge.snr-c {
+  background: #6D4C41;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 8.5px;
+}
+.legend-badge.snr-d {
+  background: #1565C0;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 8.5px;
+}
+.legend-badge.snr-p {
+  background: #00838F;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 8.5px;
+}
+.legend-badge.snr-b {
+  background: #455A64;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 8.5px;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .map-legend-card,
+  .map-legend-pill {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: var(--garis);
+  }
 }
 
 /* ---------- Elemen peta ---------- */
-.leaflet-bottom .legenda { margin: 0 0 24px 12px; padding: 10px 12px; min-width: 190px; background: rgba(255,255,255,.95); border-radius: var(--radius);
-  box-shadow: var(--bayangan); font-size: .75rem; }
-.legenda strong { display: block; margin-bottom: 6px; font-weight: 600; }
-.legenda-bar { height: 10px; border-radius: 5px; }
-.legenda-skala { display: flex; justify-content: space-between; margin-top: 3px; color: var(--teks-2); font-variant-numeric: tabular-nums; }
-/* Peta sempit: legenda naik di atas kontrol animasi (tinggi kontrol sekitar 130 px + jarak) */
-@container (max-width: 1000px) { .leaflet-bottom .legenda { margin-bottom: 172px; } }
 .leaflet-tooltip.label-kec { padding: 0; border: 0; background: none; box-shadow: none; color: var(--teks);
   font: 600 11px/1.2 var(--font); text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff; }
 .leaflet-tooltip.label-kec::before { display: none; }
@@ -358,10 +898,22 @@ tbody th { font-weight: 500; }
   .tl-tombol button { min-height: 44px; }
   .tab, .layer-daftar .cek { min-height: 44px; }
   .leaflet-bottom { bottom: var(--tampil); }
-  .leaflet-bottom .legenda { margin-bottom: 8px; min-width: 150px; padding: 8px 10px; }
+  .map-legend-card { width: 236px; max-height: calc(100vh - 180px); }
+  .map-legend-wrap { margin-bottom: 6px; }
 }
-@media (pointer: coarse) { .tl-tombol button, .tahap-btn { min-height: 44px; } }
+@media (pointer: coarse) {
+  .tl-tombol button, .tahap-btn { min-height: 44px; }
+  .basemap-btn { height: 32px; padding: 6px 14px; }
+  .map-legend-btn { width: 28px; height: 28px; }
+  .map-legend-pill { height: 32px; padding: 6px 13px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .panel { transition: none; }
   .fas.kena .bentuk { animation: none; }
+  .basemap-btn { transition: none; transform: none; }
+  .basemap-btn:hover:not(.aktif) .basemap-icon { transform: none; }
+  .map-legend-card, .map-legend-pill { transition: none !important; }
+  .badge { transition: none; }
+  .badge.siaga .badge-dot::after,
+  .badge.banjir .badge-dot::after { animation: none; display: none; }
 }
