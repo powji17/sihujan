@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SiHujan Pontianak - Simulasi & Peringatan Dini Banjir</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+</head>
+<body>
+<a class="lompat" href="#panel">Lompat ke panel</a>
+<div class="app">
+
+  <aside class="panel" id="panel" aria-label="Panel simulasi">
+    <button type="button" class="sheet-handle" id="sheet-handle" aria-label="Ubah tinggi panel"></button>
+
+    <header class="panel-kepala">
+      <h1>SiHujan Pontianak</h1>
+      <p class="ket">Simulasi kenaikan muka air akibat curah hujan.</p>
+      <div class="status">
+        <div id="badge" class="badge aman">-</div>
+        <p id="r-ringkas" class="status-ket">Memuat data...</p>
+      </div>
+      <div id="status-sr" class="sr-only" aria-live="polite"></div>
+    </header>
+
+    <div id="muat" role="status">Memuat data elevasi...</div>
+    <div id="galat" role="alert" hidden>
+      <p id="galat-teks"></p>
+      <button id="coba-lagi" type="button">Coba lagi</button>
+    </div>
+
+    <div class="animasi-panel" id="animasi-panel" aria-label="Kontrol animasi">
+      <div class="tl-baris-atas">
+        <div class="tl-jam">
+          <span>Jam ke-</span>
+          <output id="o-t">0.0</output>
+          <span>/ <output id="o-Dt">0.0</output> jam</span>
+        </div>
+        <label class="tl-speed">Kecepatan
+          <select id="in-speed" aria-label="Kecepatan animasi">
+            <option value="1">1x</option>
+            <option value="2">2x</option>
+            <option value="4">4x</option>
+          </select>
+        </label>
+      </div>
+
+      <input id="in-t" type="range" min="0" max="6" step="0.05" aria-label="Waktu simulasi">
+      <div id="tahap" class="tahap" role="group" aria-label="Penanda tahap simulasi"></div>
+
+      <div class="tl-tombol">
+        <button type="button" id="btn-awal" aria-label="Ke awal">&#9198;</button>
+        <button type="button" id="btn-play" aria-pressed="false">&#9654; Putar</button>
+        <button type="button" id="btn-akhir" aria-label="Ke akhir">&#9197;</button>
+      </div>
+    </div>
+
+    <div class="tab-daftar" role="tablist" aria-label="Bagian panel">
+      <button type="button" class="tab" role="tab" id="tab-simulasi" aria-controls="pnl-simulasi" aria-selected="true">Simulasi</button>
+      <button type="button" class="tab" role="tab" id="tab-hasil" aria-controls="pnl-hasil" aria-selected="false" tabindex="-1">Hasil</button>
+      <button type="button" class="tab" role="tab" id="tab-layer" aria-controls="pnl-layer" aria-selected="false" tabindex="-1">Layer</button>
+    </div>
+
+    <div class="tab-isi" id="tab-isi">
+
+      <!-- ===== Simulasi ===== -->
+      <div role="tabpanel" id="pnl-simulasi" aria-labelledby="tab-simulasi" tabindex="0">
+        <fieldset id="kontrol" disabled>
+          <legend>Skenario cepat</legend>
+          <div class="preset">
+            <button type="button" data-preset="ringan">Hujan ringan</button>
+            <button type="button" data-preset="sedang">Hujan sedang</button>
+            <button type="button" data-preset="lebat">Hujan lebat</button>
+            <button type="button" data-preset="sangatLebat">Hujan sangat lebat</button>
+          </div>
+
+          <div class="jeda">
+            <label for="in-I">Intensitas hujan: <output id="o-I"></output> mm/jam</label>
+            <input id="in-I" type="range" min="0" max="100" step="1">
+
+            <label for="in-D">Durasi hujan: <output id="o-D"></output> jam</label>
+            <input id="in-D" type="range" min="0.5" max="24" step="0.5">
+
+            <label for="in-T">Tinggi pasang: <output id="o-T"></output> m</label>
+            <input id="in-T" type="range" min="0" max="1.5" step="0.05">
+
+            <label for="in-drain">Kondisi drainase</label>
+            <select id="in-drain">
+              <option value="baik">Baik</option>
+              <option value="sedang">Sedang</option>
+              <option value="buruk">Buruk</option>
+            </select>
+          </div>
+
+          <div class="aksi">
+            <button type="button" id="btn-jalankan" class="utama">Jalankan simulasi</button>
+            <button type="button" id="btn-reset">Reset</button>
+          </div>
+        </fieldset>
+
+        <p class="catatan jeda">Simulasi ini edukatif dan memakai asumsi yang disederhanakan, jadi bukan prediksi resmi.
+          Untuk keputusan operasional, gunakan data BMKG dan BPBD.</p>
+      </div>
+
+      <!-- ===== Hasil ===== -->
+      <div role="tabpanel" id="pnl-hasil" aria-labelledby="tab-hasil" tabindex="0" hidden>
+        <section aria-label="Ringkasan angka">
+          <h2>Ringkasan</h2>
+          <dl>
+            <dt>Muka air efektif</dt><dd id="r-H">-</dd>
+            <dt>Luas tergenang</dt><dd id="r-luas">-</dd>
+            <dt>Persentase kota</dt><dd id="r-persen">-</dd>
+            <dt>Kedalaman rata-rata</dt><dd id="r-dalam">-</dd>
+            <dt>Kedalaman maksimum</dt><dd id="r-dalam-maks">-</dd>
+            <dt hidden>Sel</dt><dd id="r-sel" hidden></dd>
+          </dl>
+        </section>
+
+        <section aria-label="Rekomendasi">
+          <h2>Rekomendasi</h2>
+          <ul id="rekomendasi" class="rek"></ul>
+        </section>
+
+        <section aria-label="Kecamatan terdampak">
+          <h2>Kecamatan terdampak</h2>
+          <table id="tabel-kec">
+            <thead><tr><th scope="col">Kecamatan</th><th scope="col">Luas (ha)</th><th scope="col">% wilayah</th><th scope="col">Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </section>
+
+        <section aria-label="Fasilitas terdampak">
+          <h2>Fasilitas terdampak</h2>
+          <p id="fas-ringkas" class="catatan" style="margin-top:6px">Memuat data fasilitas...</p>
+          <ul id="fas-daftar" class="fas-daftar"></ul>
+          <p class="legenda-fas"><span class="fas-ikon j-rumah_sakit" style="--w:#c62828" aria-hidden="true">H</span>Rumah sakit
+            <span class="fas-ikon j-puskesmas_klinik" style="--w:#00796b" aria-hidden="true">+</span>Puskesmas/klinik
+            <span class="fas-ikon j-sekolah" style="--w:#5e35b1" aria-hidden="true">S</span>Sekolah</p>
+        </section>
+      </div>
+
+      <!-- ===== Layer ===== -->
+      <div role="tabpanel" id="pnl-layer" aria-labelledby="tab-layer" tabindex="0" hidden>
+        <fieldset id="layer-kontrol" class="layer-daftar" disabled>
+          <legend>Layer di peta</legend>
+          <label class="cek"><input type="checkbox" id="lyr-genangan"> Genangan</label>
+          <label for="lyr-opasitas" class="opasitas">Opasitas genangan: <output id="o-opasitas"></output></label>
+          <input id="lyr-opasitas" type="range" min="20" max="100" step="5" value="75">
+          <label class="cek"><input type="checkbox" id="lyr-kecamatan"> Batas kecamatan (klik untuk luas tergenang)</label>
+          <label class="cek"><input type="checkbox" id="lyr-parit"> Sungai, kanal, dan parit</label>
+          <label class="cek"><input type="checkbox" id="lyr-fasilitas"> Fasilitas umum</label>
+          <label class="cek"><input type="checkbox" id="lyr-sensor"> Titik sensor (ilustratif)</label>
+          <p class="legenda-fas">Sensor: <b>R</b> stasiun hujan, <b>C</b> stasiun cuaca, <b>D</b> debit sungai,
+            <b>P</b> pasang surut, <b>B</b> pusat data BPBD. Semua titik fiktif untuk ilustrasi.</p>
+        </fieldset>
+      </div>
+
+    </div>
+  </aside>
+
+    <main class="peta-wrap" id="peta-wrap">
+      <div id="peta" role="application" aria-label="Peta genangan Kota Pontianak"></div>
+      <button type="button" class="btn-panel" id="btn-panel" aria-controls="panel" aria-expanded="true">Panel</button>
+    </main>
+  </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js"></script>
+<script type="module" src="assets/js/main.js"></script>
+</body>
+</html>

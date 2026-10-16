@@ -1,0 +1,57 @@
+{
+  "bounds": {
+    "south": -0.0981948,
+    "west": 109.2741676,
+    "north": 0.0381168,
+    "east": 109.3853475
+  },
+  "width": 619,
+  "height": 759,
+  "cell_size_m": 20.0,
+  "encoding": {
+    "formula": "z = ((R*256 + G) / 100) - 10",
+    "z_offset": 10.0,
+    "scale": 100,
+    "R": "byte tinggi",
+    "G": "byte rendah",
+    "B": "id kecamatan (0 = luar kota atau badan air)",
+    "A": 255
+  },
+  "kecamatan": [
+    {
+      "id": 1,
+      "nama": "Pontianak Kota"
+    },
+    {
+      "id": 2,
+      "nama": "Pontianak Selatan"
+    },
+    {
+      "id": 3,
+      "nama": "Pontianak Tenggara"
+    },
+    {
+      "id": 4,
+      "nama": "Pontianak Timur"
+    },
+    {
+      "id": 5,
+      "nama": "Pontianak Barat"
+    },
+    {
+      "id": 6,
+      "nama": "Pontianak Utara"
+    }
+  ],
+  "pengolahan": {
+    "badan_air": {
+      "z_maks_m": 1.0,
+      "min_sel": 800
+    },
+    "pseudo_tanah": {
+      "persentil": 10,
+      "jendela_sel": 7,
+      "sigma_sel": 1.5
+    }
+  }
+}

@@ -1,0 +1,42 @@
+/* tokens.css - token desain FloodSense (PRD 8.2). Ubah warna/ukuran di sini, bukan di komponen. */
+:root {
+  /* Permukaan dan teks */
+  --latar: #F8FAFC;
+  --panel: #FFFFFF;
+  --teks: #111827;
+  --teks-2: #6B7280;
+  --garis: #E5E7EB;
+  --garis-kuat: #D1D5DB;
+
+  /* Aksen (air) */
+  --aksen: #3B82F6;
+  --aksen-hover: #2563EB;
+  --aksen-lembut: #E0F2FE;
+
+  /* Kedalaman genangan, dangkal -> dalam */
+  --dalam-1: #BFDBFE;
+  --dalam-2: #60A5FA;
+  --dalam-3: #3B82F6;
+  --dalam-4: #1D4ED8;
+
+  /* Status. Warna penuh untuk badge; pasangan teks/lembut untuk label kecil (kontras >= 4,5:1) */
+  --aman: #10B981;      --aman-teks: #059669;      --aman-lembut: #DCFCE7;
+  --waspada: #F59E0B;   --waspada-teks: #D97706;   --waspada-lembut: #FEF3C7;
+  --siaga: #F9731B;     --siaga-teks: #EA580C;     --siaga-lembut: #FDE68A;
+  --banjir: #EF4444;    --banjir-teks: #DC2626;    --banjir-lembut: #FECACA;
+
+  /* Bentuk */
+  --radius: 8px;
+  --radius-besar: 12px;
+  --bayangan: 0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.06);
+  --fokus: 0 0 0 2px rgba(59, 130, 246, .3);
+
+  /* Tipografi: satu keluarga sans humanis */
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --teks-kecil: .8125rem;
+  --teks-dasar: .9375rem;
+  --teks-judul: 1.125rem;
+
+  /* Tinggi bottom sheet di HP (diisi oleh ui.js) */
+  --tampil: 0px;
+}
